@@ -202,7 +202,7 @@
             const client = ShopifyBuy.buildClient({
                 domain: domain,
                 storefrontAccessToken: storefrontAccessToken,
-                // *** LA CORRECCIÓN v8 ***
+                // *** LA CORRECCIÓN (Volvemos a 2023-07) ***
                 apiVersion: '2023-07'
             });
 
@@ -404,11 +404,12 @@
                     
                     const productId = atob(encodedId); // Decodificar ID
 
-                    // 2. Iniciar el carrito
-                    await getOrCreateCheckout();
-
-                    // 3. Buscar el producto específico
+                    // *** LA CORRECCIÓN v4 ***
+                    // 2. Buscar el producto específico PRIMERO.
                     const product = await client.product.fetch(productId);
+
+                    // 3. Iniciar el carrito DESPUÉS.
+                    await getOrCreateCheckout();
 
                     // 4. Pintar el producto en la plantilla
                     renderProduct(product);
