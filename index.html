@@ -8,9 +8,9 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- *** CORRECCIÓN DE CARRITO (v10) *** -->
-    <!-- Fijamos la versión del SDK a una estable en lugar de 'latest' -->
-    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2.17.1/index.umd.min.js"></script>
+    <!-- *** CORRECCIÓN DE CARRITO (v11) *** -->
+    <!-- Volvemos a 'latest' -->
+    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2/latest/index.umd.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -341,8 +341,8 @@
             const client = ShopifyBuy.buildClient({
                 domain: domain,
                 storefrontAccessToken: storefrontAccessToken,
-                // *** LA CORRECCIÓN v9 (Usando 2023-07) ***
-                apiVersion: '2023-07'
+                // *** LA CORRECCIÓN v11 (Usando 2024-04) ***
+                apiVersion: '2024-04'
             });
 
             // --- 2. VARIABLES GLOBALES ---
