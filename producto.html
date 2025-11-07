@@ -9,7 +9,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Volvemos al SDK 'latest' -->
+    <!-- SDK de Shopify -->
     <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2/latest/index.umd.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -202,7 +202,7 @@
             const client = ShopifyBuy.buildClient({
                 domain: domain,
                 storefrontAccessToken: storefrontAccessToken,
-                // *** LA CORRECCIÓN (Volvemos a 2023-07) ***
+                // *** LA CORRECCIÓN v5 (Usando 2023-07) ***
                 apiVersion: '2023-07'
             });
 
@@ -262,9 +262,17 @@
                 } catch (error) {
                     console.error('Error al obtener/crear carrito:', error);
                     localStorage.removeItem('checkoutId'); // Limpiar el ID malo
-                    const newCheckout = await client.checkout.create();
-                    checkoutId = newCheckout.id;
-                    localStorage.setItem('checkoutId', newCheckout.id);
+                    // Intentar crear uno nuevo de todas formas
+                    try {
+                        const newCheckout = await client.checkout.create();
+                        checkoutId = newCheckout.id;
+                        localStorage.setItem('checkoutId', newCheckout.id);
+                    } catch (e) {
+                        console.error("Fallo crítico al crear el carrito:", e);
+                        // Si incluso crear falla, los botones de añadir al carrito no funcionarán
+                        addToCartBtn.disabled = true;
+                        addToCartBtn.textContent = "Error de Carrito";
+                    }
                 }
             }
 
@@ -292,7 +300,10 @@
 
             // Añadir al carrito
             async function addToCart() {
-                if (!currentVariant || !checkoutId || addToCartBtn.disabled) return;
+                if (!currentVariant || !checkoutId || addToCartBtn.disabled) {
+                    if(!checkoutId) console.error("No hay ID de carrito para añadir");
+                    return;
+                };
 
                 const quantity = parseInt(qtyInput.value, 10);
                 
@@ -391,7 +402,7 @@
                 }
             }
 
-            // --- 6. INICIALIZACIÓN DE LA PÁGINA ---
+            // --- 6. INICIALIZACIÓN DE LA PÁGINA (CORREGIDA v5) ---
             async function init() {
                 try {
                     // 1. Obtener ID de la URL
@@ -404,12 +415,12 @@
                     
                     const productId = atob(encodedId); // Decodificar ID
 
-                    // *** LA CORRECCIÓN v4 ***
+                    // *** LA CORRECCIÓN v5 ***
                     // 2. Buscar el producto específico PRIMERO.
                     const product = await client.product.fetch(productId);
 
-                    // 3. Iniciar el carrito DESPUÉS.
-                    await getOrCreateCheckout();
+                    // 3. Iniciar el carrito DESPUÉS (en segundo plano).
+                    getOrCreateCheckout();
 
                     // 4. Pintar el producto en la plantilla
                     renderProduct(product);
