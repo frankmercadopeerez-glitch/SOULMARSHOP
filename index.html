@@ -8,8 +8,8 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SDK con versión fija -->
-    <script src="https://sdks.shopifycdn.com/js-buy-sdk/2.17.1/index.umd.min.js"></script>
+    <!-- Volvemos al SDK 'latest' -->
+    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2/latest/index.umd.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,8 +62,6 @@
         }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-370px * 12)); } }
         
-        /* CAMBIO: Eliminé la regla de :hover que pausaba la animación */
-
         .review-card {
             width: 350px; margin-right: 20px; flex-shrink: 0;
             background-color: var(--bg-card); border: 1px solid #334155;
@@ -293,68 +291,6 @@
                         <p class="font-bold text-lg" style="color: var(--text-light);">Valentina S.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
                         <p class="mt-4" style="color: var(--text-muted);">"Perfecto. Nada más que decir. Compraré de nuevo la próxima semana. Gracias Soulmarshop."</p>
                     </div>
-
-                    <!-- Reseñas 13-24 (Duplicadas) -->
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Frank M.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"¡Increíble! El producto llegó al día siguiente y la calidad es 10/10. Pagar contra entrega me dio mucha confianza."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Laura G.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"Segunda vez que compro y sigo encantada. El envío fue súper rápido a Cartagena. Totalmente recomendados."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Javier P.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"Tenía dudas al comprar online, pero el servicio al cliente fue excelente y el producto es tal cual la descripción. ¡Muy profesional!"</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Ana V.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"Me encantó. El empaque perfecto y la atención al detalle se nota. Volveré a comprar sin duda."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Carlos R.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"El mejor precio que encontré. La oferta era real y el envío gratis fue la clave. Excelente tienda."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">María F.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"Compré un regalo para mi esposo y le encantó. Llegó justo a tiempo para su cumpleaños. Mil gracias."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">David L.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"El producto es una pasada. Mucho mejor de lo que esperaba. 100% recomendado."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Sofía M.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"Vivo en un pueblo alejado y el paquete llegó sin problema. Muy buen servicio de logística."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Miguel A.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"La página es muy fácil de usar y el proceso de pago contra entrega es transparente. Súper."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Isabela C.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"Calidad-precio inmejorable. Lo recomiendo al 100%."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Juan D.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"El rastreo del pedido fue muy preciso. Sabía dónde estaba mi paquete en todo momento. Gran servicio."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="star-rating mb-2"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.01l6.572-.955L10 0l2.939 6.055 6.572.955-4.756 4.435 1.123 6.545L10 15z"/></svg></div>
-                        <p class="font-bold text-lg" style="color: var(--text-light);">Valentina S.</p><p class="text-sm font-bold" style="color: var(--accent-green);">Cliente Verificado</p>
-                        <p class="mt-4" style="color: var(--text-muted);">"Perfecto. Nada más que decir. Compraré de nuevo la próxima semana. Gracias Soulmarshop."</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -402,7 +338,8 @@
             const client = ShopifyBuy.buildClient({
                 domain: domain,
                 storefrontAccessToken: storefrontAccessToken,
-                apiVersion: '2024-01'
+                // *** LA CORRECCIÓN v8 ***
+                apiVersion: '2023-07'
             });
 
             // --- 2. VARIABLES GLOBALES ---
@@ -439,8 +376,6 @@
                 productCard.className = 'product-card flex flex-col';
                 
                 const productId = product.id; 
-                // *** ESTE ES EL ENLACE CLAVE ***
-                // Apunta a la nueva página y le pasa el ID codificado
                 const productUrl = `./producto.html?id=${btoa(productId)}`; 
 
                 productCard.innerHTML = `
@@ -492,7 +427,6 @@
             // --- 4. FUNCIÓN: OBTENER PRODUCTOS ---
             async function fetchAndDisplayProducts() {
                 try {
-                    // Pedimos explícitamente el stock (quantityAvailable)
                     const products = await client.product.fetchAll(20);
                     
                     if (loadingIndicator) {
@@ -501,7 +435,6 @@
 
                     if (products.length > 0) {
                         products.forEach(product => {
-                            // Añadimos esta comprobación por si acaso
                             if (product.variants[0]) {
                                 const card = createProductCard(product);
                                 if (productsListEl) {
@@ -525,17 +458,14 @@
                 }
             }
 
-            // --- 5. FUNCIÓN: OBTENER O CREAR CARRITO (¡ACTUALIZADO!) ---
+            // --- 5. FUNCIÓN: OBTENER O CREAR CARRITO (Más segura) ---
             async function getOrCreateCheckout() {
                 try {
-                    // *** CAMBIO v6: Buscar ID en localStorage ***
                     let existingCheckoutId = localStorage.getItem('checkoutId');
 
-                    if (existingCheckoutId) {
-                        // Comprobar si el carrito aún existe en Shopify
+                    if (existingCheckoutId && existingCheckoutId !== 'null' && existingCheckoutId !== 'undefined') {
                         const checkout = await client.checkout.fetch(existingCheckoutId);
                         
-                        // Si el carrito ya fue completado (pagado), creamos uno nuevo
                         if (checkout.completedAt) {
                             existingCheckoutId = null;
                         } else {
@@ -543,20 +473,20 @@
                         }
                     }
 
-                    // Si no había ID o el ID era viejo, crear uno nuevo
                     if (!existingCheckoutId) {
                         const newCheckout = await client.checkout.create();
                         checkoutId = newCheckout.id;
-                        // *** CAMBIO v6: Guardar el nuevo ID ***
                         localStorage.setItem('checkoutId', checkoutId);
                     }
                     
                     console.log('Usando Carrito con ID:', checkoutId);
-                    updateCartCount(); // Actualizar el contador al cargar la página
+                    updateCartCount(); 
 
                 } catch (error) {
                     console.error('Error al obtener/crear carrito:', error);
-                    // Si falla el fetch (ej. ID viejo), crear uno nuevo
+                    // Si falla el fetch O el create, lo intentamos de nuevo
+                    // Esto puede ser por un ID viejo de localStorage
+                    localStorage.removeItem('checkoutId'); // Limpiar el ID malo
                     const newCheckout = await client.checkout.create();
                     checkoutId = newCheckout.id;
                     localStorage.setItem('checkoutId', newCheckout.id);
@@ -573,7 +503,6 @@
                     if (cartCountEl) {
                         cartCountEl.textContent = cartItemsCount;
                     }
-                    // Mostrar/ocultar botón de pagar según si hay items
                     if (cartItemsCount > 0 && checkoutButtonEl) {
                         checkoutButtonEl.style.opacity = '1';
                         checkoutButtonEl.style.transform = 'translateY(0)';
@@ -624,7 +553,7 @@
                     const lineItemsToAdd = [{ variantId: variantId, quantity: quantity }];
                     await client.checkout.addLineItems(checkoutId, lineItemsToAdd);
                     
-                    await updateCartCount(); // Actualizar el contador
+                    await updateCartCount(); 
 
                     button.textContent = 'Añadido ✔';
                     setTimeout(() => {
@@ -685,6 +614,7 @@
             async function init() {
                 startCountdown(); 
                 
+                // Los dos pasos, en orden.
                 await getOrCreateCheckout();
                 await fetchAndDisplayProducts();
                 

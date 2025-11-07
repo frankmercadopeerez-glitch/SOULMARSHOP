@@ -9,8 +9,8 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- CAMBIO: Fijar la misma versión estable del SDK -->
-    <script src="https://sdks.shopifycdn.com/js-buy-sdk/2.17.1/index.umd.min.js"></script>
+    <!-- Volvemos al SDK 'latest' -->
+    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2/latest/index.umd.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -202,7 +202,8 @@
             const client = ShopifyBuy.buildClient({
                 domain: domain,
                 storefrontAccessToken: storefrontAccessToken,
-                apiVersion: '2024-01'
+                // *** LA CORRECCIÓN v8 ***
+                apiVersion: '2023-07'
             });
 
             // --- 2. VARIABLES GLOBALES ---
@@ -240,11 +241,9 @@
                 try {
                     let existingCheckoutId = localStorage.getItem('checkoutId');
 
-                    if (existingCheckoutId) {
-                        // Comprobar si el carrito aún existe en Shopify
+                    if (existingCheckoutId && existingCheckoutId !== 'null' && existingCheckoutId !== 'undefined') {
                         const checkout = await client.checkout.fetch(existingCheckoutId);
                         
-                        // Si el carrito ya fue completado (pagado), creamos uno nuevo
                         if (checkout.completedAt) {
                             existingCheckoutId = null;
                         } else {
@@ -258,11 +257,11 @@
                         localStorage.setItem('checkoutId', checkoutId);
                     }
                     
-                    updateCartCount(); // Actualizar el contador al cargar la página
+                    updateCartCount();
 
                 } catch (error) {
                     console.error('Error al obtener/crear carrito:', error);
-                    // Si falla el fetch (ej. ID viejo), crear uno nuevo
+                    localStorage.removeItem('checkoutId'); // Limpiar el ID malo
                     const newCheckout = await client.checkout.create();
                     checkoutId = newCheckout.id;
                     localStorage.setItem('checkoutId', newCheckout.id);
