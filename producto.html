@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- El título será establecido por JS -->
+    <title>Cargando producto...</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2/latest/index.umd.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <!-- Estilos (la mayoría son copiados de soulmarshop.html para consistencia) -->
+    <style>
+        :root {
+            --bg-dark: #0F172A;      
+            --bg-card: #1E293B;      
+            --text-light: #E2E8F0;    
+            --text-muted: #94A3B8;   
+            --accent-blue: #38BDF8;  
+            --accent-pink: #EC4899;  
+            --accent-green: #22C55E; 
+            --white: #FFFFFF;
+        }
+        
+        html.dark { color-scheme: dark; }
+        body { font-family: 'Manrope', sans-serif; background-color: var(--bg-dark); color: var(--text-light); }
+        h1, h2, h3, h4, h5, h6 { font-weight: 800; }
+
+        .cta-button {
+            display: inline-block; padding: 14px 32px; font-weight: 700; font-size: 1.2rem; 
+            color: var(--white); border-radius: 12px;
+            background-image: linear-gradient(to right, var(--accent-blue), var(--accent-pink));
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3); transition: all 0.3s ease; text-align: center;
+        }
+        .cta-button:hover { box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5); transform: translateY(-2px); }
+        .cta-button:disabled {
+            background-image: none;
+            background-color: #334155;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Estilos de la Galería de Producto */
+        .gallery-thumbnails img {
+            cursor: pointer;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+        .gallery-thumbnails img:hover { opacity: 1; border-color: var(--accent-blue); }
+        .gallery-thumbnails img.active { opacity: 1; border-color: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
+
+        /* Estilos para la descripción (inyectada desde Shopify) */
+        .product-description {
+            color: var(--text-muted);
+        }
+        .product-description p { margin-bottom: 1rem; }
+        .product-description ul, .product-description ol { margin-left: 1.5rem; margin-bottom: 1rem; list-style: revert; }
+        .product-description strong { color: var(--text-light); font-weight: 700; }
+
+        .quantity-selector {
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .quantity-btn {
+            background-color: #334155;
+            color: var(--text-light);
+            padding: 0 14px;
+            font-size: 1.5rem;
+            height: 48px;
+            transition: background-color 0.2s;
+        }
+        .quantity-btn:hover:not(:disabled) { background-color: #475569; }
+        .quantity-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            background-color: var(--bg-card);
+            color: var(--text-light);
+            border: none;
+            height: 48px;
+            font-weight: bold;
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .quantity-input[type=number] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- ======================================
+    HEADER / NAVEGACIÓN (Consistente)
+    ====================================== -->
+    <nav class="sticky top-0 z-50" style="background-color: var(--bg-dark); border-bottom: 1px solid #334155;">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <!-- Enlace para volver al inicio -->
+            <a href="./soulmarshop.html" class="text-2xl font-bold" style="color: var(--text-light);">Soulmarshop</a>
+            
+            <button id="cart-button" class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" style="color: var(--text-light);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ======================================
+    CONTENEDOR DE PÁGINA DE PRODUCTO
+    ====================================== -->
+    <main class="container mx-auto px-6 py-12">
+        <!-- Indicador de Carga -->
+        <div id="product-loader" class="text-center py-20">
+            <p class="text-2xl" style="color: var(--text-muted);">Cargando producto...</p>
+        </div>
+        
+        <!--
+        Este contenedor es la "plantilla" vacía.
+        El JS la llenará con el contenido de Shopify.
+        -->
+        <div id="product-content" class="grid grid-cols-1 md:grid-cols-2 gap-12" style="display: none;">
+            
+            <!-- Columna 1: Galería de Imágenes -->
+            <div id="product-gallery">
+                <!-- Imagen Principal -->
+                <div class="mb-4">
+                    <img id="main-product-image" src="" alt="Imagen principal del producto" class="w-full h-auto rounded-lg shadow-lg object-cover" style="border: 1px solid #334155;">
+                </div>
+                <!-- Miniaturas (Thumbnails) -->
+                <div id="product-thumbnails" class="grid grid-cols-5 gap-2">
+                    <!-- Las miniaturas se insertarán aquí con JS -->
+                </div>
+            </div>
+
+            <!-- Columna 2: Información y Compra -->
+            <div id="product-info">
+                <h1 id="product-title" class="text-4xl font-extrabold mb-4" style="color: var(--white);"></h1>
+                
+                <p id="product-stock" class="text-lg font-bold mb-4" style="color: var(--accent-pink);"></p>
+                
+                <p id="product-price" class="text-3xl font-bold mb-6" style="color: var(--accent-blue);"></p>
+                
+                <div classs="mb-6">
+                    <h3 class="text-xl font-bold mb-2" style="color: var(--text-light);">Cantidad</h3>
+                    <div class="quantity-selector flex items-center mb-6" style="max-width: 150px;">
+                        <button id="quantity-decrease" class="quantity-btn rounded-l-md">-</button>
+                        <input id="quantity-input" type="number" class="quantity-input" value="1" min="1">
+                        <button id="quantity-increase" class="quantity-btn rounded-r-md">+</button>
+                    </div>
+                </div>
+
+                <button id="add-to-cart-btn" class="cta-button w-full">
+                    Añadir al Carrito
+                </button>
+                
+                <!-- La descripción de Shopify se insertará aquí -->
+                <div class="mt-8 pt-6 border-t" style="border-color: #334155;">
+                    <h3 class="text-xl font-bold mb-4" style="color: var(--text-light);">Descripción del Producto</h3>
+                    <div id="product-description" class="product-description">
+                        <!-- Contenido de Shopify (HTML) -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ======================================
+    FOOTER (Consistente)
+    ====================================== -->
+    <footer class="py-12" style="background-color: var(--bg-dark); border-top: 1px solid #334155;">
+        <div class="container mx-auto px-6 text-center">
+            <p style="color: var(--text-muted);">&copy; <span id="year"></span> Soulmarshop. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Botón flotante de Pagar (CTA) -->
+    <button id="checkout-button" class="cta-button fixed bottom-4 right-4 transform translate-y-24 opacity-0 transition-all duration-300">
+        Ir a Pagar
+    </button>
+
+
+    <!-- =================================================================== -->
+    <!-- EL CEREBRO DE LA PÁGINA DE PRODUCTO (JavaScript)                     -->
+    <!-- =================================================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. CONFIGURACIÓN INICIAL ---
+            const storefrontAccessToken = '07474875d0c64dc0b186575eaf96553e';
+            const domain = 'vtbr71-af.myshopify.com';
+
+            const client = ShopifyBuy.buildClient({
+                domain: domain,
+                storefrontAccessToken: storefrontAccessToken,
+                apiVersion: '2024-01'
+            });
+
+            // --- 2. VARIABLES GLOBALES ---
+            let checkoutId = null;
+            let cartItemsCount = 0;
+            let currentVariant = null; // Para guardar la variante del producto
+
+            // --- 3. OBTENER ELEMENTOS DEL DOM ---
+            const cartCountEl = document.getElementById('cart-count');
+            const checkoutButtonEl = document.getElementById('checkout-button');
+            const cartButtonEl = document.getElementById('cart-button');
+            const productLoader = document.getElementById('product-loader');
+            const productContent = document.getElementById('product-content');
+            
+            // Elementos de la plantilla
+            const mainImage = document.getElementById('main-product-image');
+            const thumbnailsContainer = document.getElementById('product-thumbnails');
+            const productTitle = document.getElementById('product-title');
+            const productStock = document.getElementById('product-stock');
+            const productPrice = document.getElementById('product-price');
+            const productDescription = document.getElementById('product-description');
+            const qtyDecrease = document.getElementById('quantity-decrease');
+            const qtyInput = document.getElementById('quantity-input');
+            const qtyIncrease = document.getElementById('quantity-increase');
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+            
+            const yearEl = document.getElementById('year');
+            if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+
+
+            // --- 4. FUNCIONES DEL CARRITO (Compartidas) ---
+
+            // Función para obtener el carrito de localStorage o crear uno nuevo
+            async function getOrCreateCheckout() {
+                try {
+                    let existingCheckoutId = localStorage.getItem('checkoutId');
+
+                    if (existingCheckoutId) {
+                        // Comprobar si el carrito aún existe en Shopify
+                        const checkout = await client.checkout.fetch(existingCheckoutId);
+                        
+                        // Si el carrito ya fue completado (pagado), creamos uno nuevo
+                        if (checkout.completedAt) {
+                            existingCheckoutId = null;
+                        } else {
+                            checkoutId = existingCheckoutId;
+                        }
+                    }
+
+                    if (!existingCheckoutId) {
+                        const newCheckout = await client.checkout.create();
+                        checkoutId = newCheckout.id;
+                        localStorage.setItem('checkoutId', checkoutId);
+                    }
+                    
+                    updateCartCount(); // Actualizar el contador al cargar la página
+
+                } catch (error) {
+                    console.error('Error al obtener/crear carrito:', error);
+                    // Si falla el fetch (ej. ID viejo), crear uno nuevo
+                    const newCheckout = await client.checkout.create();
+                    checkoutId = newCheckout.id;
+                    localStorage.setItem('checkoutId', checkoutId);
+                }
+            }
+
+            // Actualizar el contador del carrito
+            async function updateCartCount() {
+                if (!checkoutId) return;
+                try {
+                    const checkout = await client.checkout.fetch(checkoutId);
+                    cartItemsCount = checkout.lineItems.reduce((total, item) => total + item.quantity, 0);
+                    
+                    if (cartCountEl) {
+                        cartCountEl.textContent = cartItemsCount;
+                    }
+                    if (cartItemsCount > 0 && checkoutButtonEl) {
+                        checkoutButtonEl.style.opacity = '1';
+                        checkoutButtonEl.style.transform = 'translateY(0)';
+                    }
+                } catch (error) {
+                    console.warn('No se pudo actualizar el contador del carrito:', error);
+                }
+            }
+
+            // Añadir al carrito
+            async function addToCart() {
+                if (!currentVariant || !checkoutId || addToCartBtn.disabled) return;
+
+                const quantity = parseInt(qtyInput.value, 10);
+                
+                addToCartBtn.textContent = 'Añadiendo...';
+                addToCartBtn.disabled = true;
+
+                try {
+                    const lineItemsToAdd = [{ variantId: currentVariant.id, quantity: quantity }];
+                    await client.checkout.addLineItems(checkoutId, lineItemsToAdd);
+                    
+                    await updateCartCount(); // Actualizar el contador
+
+                    addToCartBtn.textContent = 'Añadido ✔';
+                    setTimeout(() => {
+                        addToCartBtn.textContent = 'Añadir al Carrito';
+                        addToCartBtn.disabled = !currentVariant.available;
+                    }, 2000);
+                } catch (error) {
+                    console.error('Error al añadir al carrito:', error);
+                    addToCartBtn.textContent = 'Error';
+                    setTimeout(() => {
+                        addToCartBtn.textContent = 'Añadir al Carrito';
+                        addToCartBtn.disabled = !currentVariant.available;
+                    }, 2000);
+                }
+            }
+            
+            // Ir a pagar
+            async function goToCheckout() {
+                if (!checkoutId) return;
+                if (checkoutButtonEl) checkoutButtonEl.textContent = 'Cargando...';
+                try {
+                    const checkout = await client.checkout.fetch(checkoutId);
+                    window.location.href = checkout.webUrl;
+                } catch (error) {
+                    console.error('Error al ir a pagar:', error);
+                    if (checkoutButtonEl) checkoutButtonEl.textContent = 'Ir a Pagar';
+                }
+            }
+
+            // --- 5. FUNCIONES DE PÁGINA DE PRODUCTO ---
+
+            // Pintar los datos del producto en la plantilla
+            function renderProduct(product) {
+                currentVariant = product.variants[0]; // Asumimos la primera variante
+
+                // 1. Establecer Título y Precio
+                document.title = product.title; // Título de la pestaña
+                productTitle.textContent = product.title;
+                productPrice.textContent = `${currentVariant.price.amount} ${currentVariant.price.currencyCode}`;
+                
+                // 2. Pintar Descripción (¡importante!)
+                // Usamos descriptionHtml para renderizar el formato de Shopify (negritas, listas)
+                productDescription.innerHTML = product.descriptionHtml; 
+
+                // 3. Mostrar Stock
+                const quantity = currentVariant.quantityAvailable;
+                if (currentVariant.available && quantity !== null && quantity <= 10 && quantity > 0) {
+                    productStock.textContent = `¡Quedan solo ${quantity} unidades!`;
+                } else if (!currentVariant.available) {
+                    productStock.textContent = '¡Agotado!';
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.textContent = 'Agotado';
+                    qtyDecrease.disabled = true;
+                    qtyIncrease.disabled = true;
+                }
+
+                // 4. Pintar Galería de Imágenes
+                mainImage.src = product.images[0].src;
+                mainImage.alt = product.title;
+                
+                thumbnailsContainer.innerHTML = ''; // Limpiar miniaturas
+                product.images.forEach((image, index) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = image.src;
+                    thumb.alt = `Miniatura ${index + 1}`;
+                    thumb.dataset.fullSrc = image.src; // Guardar la URL grande
+                    
+                    if (index === 0) thumb.classList.add('active'); // Marcar la primera
+                    
+                    thumb.addEventListener('click', () => {
+                        mainImage.src = thumb.dataset.fullSrc;
+                        // Actualizar la clase 'active'
+                        thumbnailsContainer.querySelector('img.active').classList.remove('active');
+                        thumb.classList.add('active');
+                    });
+                    
+                    thumbnailsContainer.appendChild(thumb);
+                });
+            }
+
+            // --- 6. INICIALIZACIÓN DE LA PÁGINA ---
+            async function init() {
+                try {
+                    // 1. Obtener ID de la URL
+                    const params = new URLSearchParams(window.location.search);
+                    const encodedId = params.get('id');
+                    
+                    if (!encodedId) {
+                        throw new Error('No se encontró ID de producto en la URL');
+                    }
+                    
+                    const productId = atob(encodedId); // Decodificar ID
+
+                    // 2. Iniciar el carrito
+                    await getOrCreateCheckout();
+
+                    // 3. Buscar el producto específico
+                    // Pedimos explícitamente el stock (quantityAvailable)
+                    const product = await client.product.fetch(productId);
+
+                    // 4. Pintar el producto en la plantilla
+                    renderProduct(product);
+
+                    // 5. Ocultar "cargando" y mostrar contenido
+                    productLoader.style.display = 'none';
+                    productContent.style.display = 'grid'; // Mostrar el grid
+
+                    // 6. Configurar Event Listeners de esta página
+                    if (cartButtonEl) cartButtonEl.addEventListener('click', goToCheckout);
+                    if (checkoutButtonEl) checkoutButtonEl.addEventListener('click', goToCheckout);
+                    
+                    qtyIncrease.addEventListener('click', () => qtyInput.value = parseInt(qtyInput.value, 10) + 1);
+                    qtyDecrease.addEventListener('click', () => {
+                        const val = parseInt(qtyInput.value, 10);
+                        if (val > 1) qtyInput.value = val - 1;
+                    });
+                    
+                    addToCartBtn.addEventListener('click', addToCart);
+
+                } catch (error) {
+                    console.error('Error al cargar la página de producto:', error);
+                    productLoader.innerHTML = `<p class="text-2xl text-red-500">Error: No se pudo cargar el producto.</p><p class="text-lg text-gray-400 mt-4">${error.message}</p><a href="./soulmarshop.html" class="cta-button mt-8">Volver al inicio</a>`;
+                }
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
