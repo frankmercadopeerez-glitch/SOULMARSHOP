@@ -8,8 +8,9 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Volvemos al SDK 'latest' -->
-    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2/latest/index.umd.min.js"></script>
+    <!-- *** CORRECCIÓN DE CARRITO (v10) *** -->
+    <!-- Fijamos la versión del SDK a una estable en lugar de 'latest' -->
+    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2.17.1/index.umd.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,6 +61,8 @@
             display: flex; width: calc(370px * 24); 
             animation: scroll 60s linear infinite;
         }
+        /* No pausar en hover */
+        /* .infinite-carousel-track:hover { animation-play-state: paused; } */
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-370px * 12)); } }
         
         .review-card {
@@ -338,7 +341,7 @@
             const client = ShopifyBuy.buildClient({
                 domain: domain,
                 storefrontAccessToken: storefrontAccessToken,
-                // *** LA CORRECCIÓN (Volvemos a 2023-07) ***
+                // *** LA CORRECCIÓN v9 (Usando 2023-07) ***
                 apiVersion: '2023-07'
             });
 
@@ -354,8 +357,18 @@
             
             const yearEl = document.getElementById('year');
             if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+            
+            // --- 3. FUNCIÓN DE FORMATO DE PRECIO (NUEVO v10) ---
+            function formatPrice(amount, currency) {
+                // Formato 'es-CO' para pesos colombianos, sin decimales.
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: currency,
+                    minimumFractionDigits: 0
+                }).format(amount);
+            }
 
-            // --- 3. FUNCIÓN: PINTAR UN PRODUCTO (HTML) ---
+            // --- 4. FUNCIÓN: PINTAR UN PRODUCTO (HTML) ---
             function createProductCard(product) {
                 const variant = product.variants[0];
                 const price = variant.price.amount;
@@ -396,7 +409,8 @@
                         ${stockHTML}
 
                         <div class="flex items-center justify-between mb-4">
-                            <p class="text-lg font-bold" style="color: var(--accent-blue);">${price} ${currency}</p>
+                            <!-- *** PRECIO FORMATEADO (v10) *** -->
+                            <p class="text-lg font-bold" style="color: var(--accent-blue);">${formatPrice(price, currency)}</p>
                             
                             <div class="quantity-selector flex items-center">
                                 <button class="quantity-btn rounded-l-md" data-action="decrease" ${!variant.available ? 'disabled' : ''}>-</button>
@@ -424,7 +438,7 @@
                 return productCard;
             }
 
-            // --- 4. FUNCIÓN: OBTENER PRODUCTOS ---
+            // --- 5. FUNCIÓN: OBTENER PRODUCTOS ---
             async function fetchAndDisplayProducts() {
                 try {
                     const products = await client.product.fetchAll(20);
@@ -458,7 +472,7 @@
                 }
             }
 
-            // --- 5. FUNCIÓN: OBTENER O CREAR CARRITO (Más segura) ---
+            // --- 6. FUNCIÓN: OBTENER O CREAR CARRITO (Más segura) ---
             async function getOrCreateCheckout() {
                 try {
                     let existingCheckoutId = localStorage.getItem('checkoutId');
@@ -474,6 +488,7 @@
                     }
 
                     if (!existingCheckoutId) {
+                        console.log("Creando nuevo carrito...");
                         const newCheckout = await client.checkout.create();
                         checkoutId = newCheckout.id;
                         localStorage.setItem('checkoutId', checkoutId);
@@ -483,17 +498,12 @@
                     updateCartCount(); 
 
                 } catch (error) {
-                    console.error('Error al obtener/crear carrito:', error);
-                    // Si falla el fetch O el create, lo intentamos de nuevo
-                    // Esto puede ser por un ID viejo de localStorage
+                    console.error('Error grave al obtener/crear carrito:', error);
                     localStorage.removeItem('checkoutId'); // Limpiar el ID malo
-                    const newCheckout = await client.checkout.create();
-                    checkoutId = newCheckout.id;
-                    localStorage.setItem('checkoutId', newCheckout.id);
                 }
             }
             
-            // --- 6. FUNCIÓN: ACTUALIZAR CONTADOR ---
+            // --- 7. FUNCIÓN: ACTUALIZAR CONTADOR ---
             async function updateCartCount() {
                 if (!checkoutId) return;
                 try {
@@ -512,10 +522,16 @@
                     }
                 } catch (error) {
                     console.warn('No se pudo actualizar el contador del carrito:', error);
+                    // Si el checkoutId es inválido (ej. expiró), lo limpiamos.
+                    if (error.message.includes("checkout not found")) {
+                        localStorage.removeItem('checkoutId');
+                        checkoutId = null;
+                        await getOrCreateCheckout(); // Intentar crear uno nuevo
+                    }
                 }
             }
 
-            // --- 7. LÓGICA DE CLICS EN LA TARJETA ---
+            // --- 8. LÓGICA DE CLICS EN LA TARJETA ---
             function handleCardClick(event) {
                 const target = event.target;
 
@@ -534,6 +550,12 @@
 
                 const addButton = target.closest('.add-to-cart-btn');
                 if (addButton) {
+                    if (!checkoutId) {
+                        console.error("Error: El carrito aún no está listo.");
+                        addButton.textContent = 'Error de Carrito';
+                        setTimeout(() => button.textContent = 'Añadir al Carrito', 2000);
+                        return;
+                    }
                     const variantId = addButton.dataset.variantId;
                     const quantityInput = addButton.closest('.product-card').querySelector(`input[data-variant-id="${variantId}"]`);
                     const quantity = parseInt(quantityInput.value, 10);
@@ -542,7 +564,7 @@
                 }
             }
 
-            // --- 8. FUNCIÓN: AÑADIR AL CARRITO ---
+            // --- 9. FUNCIÓN: AÑADIR AL CARRITO ---
             async function addToCart(variantId, quantity, button) {
                 if (button.disabled) return; 
 
@@ -570,9 +592,12 @@
                 }
             }
 
-            // --- 9. FUNCIÓN: IR A PAGAR ---
+            // --- 10. FUNCIÓN: IR A PAGAR ---
             async function goToCheckout() {
-                if (!checkoutId) return;
+                if (!checkoutId) {
+                     alert("Hubo un error al conectar con el carrito. Por favor, refresca la página.");
+                     return;
+                }
                 if (checkoutButtonEl) {
                     checkoutButtonEl.textContent = 'Cargando...';
                 }
@@ -587,7 +612,7 @@
                 }
             }
 
-            // --- 10. LÓGICA DE CUENTA REGRESIVA ---
+            // --- 11. LÓGICA DE CUENTA REGRESIVA ---
             function startCountdown() {
                 const daysEl = document.getElementById('countdown-days');
                 const hoursEl = document.getElementById('countdown-hours');
@@ -610,17 +635,14 @@
                 }, 1000);
             }
 
-            // --- 11. INICIALIZACIÓN ---
+            // --- 12. INICIALIZACIÓN ---
             async function init() {
                 startCountdown(); 
                 
-                // *** LA CORRECCIÓN v9 ***
                 // 1. Cargar productos PRIMERO.
-                // Esto soluciona el "Cargando productos..."
                 await fetchAndDisplayProducts();
                 
                 // 2. Cargar/Crear el carrito DESPUÉS.
-                // Si esto falla, los productos ya estarán visibles.
                 await getOrCreateCheckout();
                 
                 // 3. Añadir los "listeners" al final

@@ -9,14 +9,15 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SDK de Shopify -->
-    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2/latest/index.umd.min.js"></script>
+    <!-- *** CORRECCIÓN DE CARRITO (v6) *** -->
+    <!-- Fijamos la versión del SDK a una estable en lugar de 'latest' -->
+    <script src="https://sdks.shopifycdn.com/js-buy-sdk/v2.17.1/index.umd.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
 
-    <!-- Estilos (la mayoría son copiados de soulmarshop.html para consistencia) -->
+    <!-- Estilos (la mayoría son copiados de index.html para consistencia) -->
     <style>
         :root {
             --bg-dark: #0F172A;      
@@ -102,8 +103,8 @@
     ====================================== -->
     <nav class="sticky top-0 z-50" style="background-color: var(--bg-dark); border-bottom: 1px solid #334155;">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <!-- Enlace para volver al inicio -->
-            <a href="./soulmarshop.html" class="text-2xl font-bold" style="color: var(--text-light);">Soulmarshop</a>
+            <!-- *** ENLACE CORREGIDO (v6) *** -->
+            <a href="./index.html" class="text-2xl font-bold" style="color: var(--text-light);">Soulmarshop</a>
             
             <button id="cart-button" class="relative">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" style="color: var(--text-light);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -147,7 +148,11 @@
                 
                 <p id="product-stock" class="text-lg font-bold mb-4" style="color: var(--accent-pink);"></p>
                 
-                <p id="product-price" class="text-3xl font-bold mb-6" style="color: var(--accent-blue);"></p>
+                <!-- *** CONTENEDOR DE PRECIO MEJORADO (v6) *** -->
+                <div class="mb-6">
+                    <span id="product-price" class="text-3xl font-bold" style="color: var(--accent-blue);"></span>
+                    <span id="product-compare-price" class="text-xl ml-3" style="color: var(--text-muted); text-decoration: line-through;"></span>
+                </div>
                 
                 <div classs="mb-6">
                     <h3 class="text-xl font-bold mb-2" style="color: var(--text-light);">Cantidad</h3>
@@ -162,6 +167,22 @@
                     Añadir al Carrito
                 </button>
                 
+                <!-- *** "COSITAS" - INSIGNIAS DE CONFIANZA (v6) *** -->
+                <div id="trust-badges" class="mt-6 p-4 rounded-lg flex flex-col sm:flex-row justify-around items-center" style="background-color: var(--bg-card); border: 1px solid #334155;">
+                    <div class="flex items-center mb-2 sm:mb-0">
+                        <span class="text-2xl mr-2">🔒</span>
+                        <span class="text-sm" style="color: var(--text-muted);">Pago Seguro</span>
+                    </div>
+                    <div class="flex items-center mb-2 sm:mb-0">
+                        <span class="text-2xl mr-2">🚚</span>
+                        <span class="text-sm" style="color: var(--text-muted);">Envío Contra Entrega</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-2">✅</span>
+                        <span class="text-sm" style="color: var(--text-muted);">Garantía de Calidad</span>
+                    </div>
+                </div>
+
                 <!-- La descripción de Shopify se insertará aquí -->
                 <div class="mt-8 pt-6 border-t" style="border-color: #334155;">
                     <h3 class="text-xl font-bold mb-4" style="color: var(--text-light);">Descripción del Producto</h3>
@@ -202,7 +223,7 @@
             const client = ShopifyBuy.buildClient({
                 domain: domain,
                 storefrontAccessToken: storefrontAccessToken,
-                // *** LA CORRECCIÓN v5 (Usando 2023-07) ***
+                // *** LA CORRECCIÓN v6 (Usando 2023-07) ***
                 apiVersion: '2023-07'
             });
 
@@ -224,6 +245,7 @@
             const productTitle = document.getElementById('product-title');
             const productStock = document.getElementById('product-stock');
             const productPrice = document.getElementById('product-price');
+            const productComparePrice = document.getElementById('product-compare-price'); // (Nuevo v6)
             const productDescription = document.getElementById('product-description');
             const qtyDecrease = document.getElementById('quantity-decrease');
             const qtyInput = document.getElementById('quantity-input');
@@ -232,6 +254,15 @@
             
             const yearEl = document.getElementById('year');
             if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+            
+            // --- 3. FUNCIÓN DE FORMATO DE PRECIO (NUEVO v6) ---
+            function formatPrice(amount, currency) {
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: currency,
+                    minimumFractionDigits: 0
+                }).format(amount);
+            }
 
 
             // --- 4. FUNCIONES DEL CARRITO (Compartidas) ---
@@ -295,13 +326,22 @@
                     }
                 } catch (error) {
                     console.warn('No se pudo actualizar el contador del carrito:', error);
+                     if (error.message.includes("checkout not found")) {
+                        localStorage.removeItem('checkoutId');
+                        checkoutId = null;
+                        await getOrCreateCheckout(); // Intentar crear uno nuevo
+                    }
                 }
             }
 
             // Añadir al carrito
             async function addToCart() {
                 if (!currentVariant || !checkoutId || addToCartBtn.disabled) {
-                    if(!checkoutId) console.error("No hay ID de carrito para añadir");
+                    if(!checkoutId) {
+                        console.error("No hay ID de carrito para añadir");
+                        addToCartBtn.textContent = 'Error de Carrito';
+                        setTimeout(() => addToCartBtn.textContent = 'Añadir al Carrito', 2000);
+                    }
                     return;
                 };
 
@@ -333,7 +373,10 @@
             
             // Ir a pagar
             async function goToCheckout() {
-                if (!checkoutId) return;
+                if (!checkoutId) {
+                    alert("Hubo un error al conectar con el carrito. Por favor, refresca la página.");
+                    return;
+                }
                 if (checkoutButtonEl) checkoutButtonEl.textContent = 'Cargando...';
                 try {
                     const checkout = await client.checkout.fetch(checkoutId);
@@ -350,16 +393,25 @@
             function renderProduct(product) {
                 currentVariant = product.variants[0]; // Asumimos la primera variante
 
-                // 1. Establecer Título y Precio
+                // 1. Establecer Título y Precio (Formateado v6)
                 document.title = product.title; // Título de la pestaña
                 productTitle.textContent = product.title;
-                productPrice.textContent = `${currentVariant.price.amount} ${currentVariant.price.currencyCode}`;
                 
-                // 2. Pintar Descripción (¡importante!)
-                // Usamos descriptionHtml para renderizar el formato de Shopify (negritas, listas)
+                const price = currentVariant.price.amount;
+                const currency = currentVariant.price.currencyCode;
+                productPrice.textContent = formatPrice(price, currency);
+
+                // 2. "Cositas" - Mostrar Precio de Comparación (v6)
+                if (currentVariant.compareAtPrice && parseFloat(currentVariant.compareAtPrice.amount) > parseFloat(price)) {
+                    productComparePrice.textContent = formatPrice(currentVariant.compareAtPrice.amount, currency);
+                } else {
+                    productComparePrice.style.display = 'none';
+                }
+                
+                // 3. Pintar Descripción (¡importante!)
                 productDescription.innerHTML = product.descriptionHtml; 
 
-                // 3. Mostrar Stock
+                // 4. Mostrar Stock
                 const quantity = currentVariant.quantityAvailable;
                 if (currentVariant.available && quantity !== null && quantity <= 10 && quantity > 0) {
                     productStock.textContent = `¡Quedan solo ${quantity} unidades!`;
@@ -373,7 +425,7 @@
                     productStock.textContent = ''; // No mostrar nada si hay mucho stock
                 }
 
-                // 4. Pintar Galería de Imágenes
+                // 5. Pintar Galería de Imágenes
                 if (product.images.length > 0) {
                     mainImage.src = product.images[0].src;
                     mainImage.alt = product.title;
@@ -415,7 +467,6 @@
                     
                     const productId = atob(encodedId); // Decodificar ID
 
-                    // *** LA CORRECCIÓN v5 ***
                     // 2. Buscar el producto específico PRIMERO.
                     const product = await client.product.fetch(productId);
 
@@ -443,7 +494,8 @@
 
                 } catch (error) {
                     console.error('Error al cargar la página de producto:', error);
-                    productLoader.innerHTML = `<p class="text-2xl text-red-500">Error: No se pudo cargar el producto.</p><p class="text-lg text-gray-400 mt-4">${error.message}</p><a href="./soulmarshop.html" class="cta-button mt-8">Volver al inicio</a>`;
+                    // *** ENLACE CORREGIDO (v6) ***
+                    productLoader.innerHTML = `<p class="text-2xl text-red-500">Error: No se pudo cargar el producto.</p><p class="text-lg text-gray-400 mt-4">${error.message}</p><a href="./index.html" class="cta-button mt-8">Volver al inicio</a>`;
                 }
             }
 
